@@ -15,7 +15,8 @@ GUI = {
 
     defaults = {
         capture = function() end,
-        draw = function() end
+        draw = function() end,
+        resize = function() end
     },
 
     stack = Stack(),
@@ -119,7 +120,7 @@ GUI.window = {
                                 if state.pressed.l then
                                     local dx = state.position.x-lastpos
                                     self.rect.x = self.rect.x + dx
-                                    self.rect.w = self.rect.w - dx
+                                    self:resize(self.rect.w - dx, self.rect.h)
                                     lastpos = lastpos + dx
                                 end
                             end
@@ -135,7 +136,7 @@ GUI.window = {
                             held = function(state)
                                 if state.pressed.l then
                                     local dx = state.position.x-lastpos
-                                    self.rect.w = self.rect.w + dx
+                                    self:resize(self.rect.w + dx, self.rect.h)
                                     lastpos = lastpos + dx
                                 end
                             end
@@ -151,7 +152,7 @@ GUI.window = {
                             held = function(state)
                                 if state.pressed.l then
                                     local dy = state.position.y-lastpos
-                                    self.rect.h = self.rect.h + dy
+                                    self:resize(self.rect.w, self.rect.h+dy)
                                     lastpos = lastpos + dy
                                 end
                             end
@@ -189,6 +190,15 @@ GUI.window = {
     update = function(dt)
         for _,e in pairs(self.elements) do
             element:update(dt)
+        end
+    end,
+
+    resize = function(self,w,h)
+        self.rect.w = w
+        self.rect.h = h
+        for _,e in ipairs(self.elements) do
+            e.anchor(e.rect, self.rect)
+            e.resize()
         end
     end
 }
@@ -256,10 +266,12 @@ GUI.cell = {
 ]]
 GUI.anchor = {
     -- these anchors fix the position relative to sides and/or corners
-    topleft = function(pos)
-        return function(box, out)
-            box.x = pos.x
-            box.y = pos.y
+    topleft = function(rect)
+        return function(outer)
+            return function(box, out)
+                box.x = rect.x
+                box.y = rect.y
+            end
         end
     end,
     topcentre = function(pos)
@@ -388,6 +400,7 @@ GUI.text.mt = {
             love.graphics.printf(text, GUI.frame.x, GUI.frame.y, rect.w, "left")
         end
         new = GUI.element(nil,nil,draw)
+        new.anchor = GUI.anchor.topcentre(rect)
         Debug.track(function() return "text: "..pos end)
         return setmetatable(new, {
             __index = GUI.text
