@@ -53,9 +53,13 @@ function love.load()
 	box = GUI.window(
 		Rect(25,25,100,100),
 		{GUI.text("Hello world!", Rect(10,10,40,40))},
-		{GUI.window.properties.draggable}
+		{
+			GUI.window.properties.resizable(10),
+			GUI.window.properties.draggable
+		}
 	)
 	Mouse.addLayer("GUI", function(pos) return box:capture(pos) end)
+	GUI.debug()
 end
 
 iters = 10

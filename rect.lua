@@ -21,6 +21,15 @@ function Rect:new(x,y,w,h)
     return setmetatable(r, Rect.mt)
 end
 
+function Rect:copy()
+    return Rect(
+        self.x,
+        self.y,
+        self.w,
+        self.h
+    )
+end
+
 function Rect:unpack()
     return self.x, self.y, self.w, self.h
 end

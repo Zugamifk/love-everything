@@ -70,11 +70,16 @@ end
 
 function Mouse.moved(x,y)
     Mouse.state.position = XY(x,y)
+
+    if Mouse.state.pressed.l then
+         return -- ignore while dragging
+    end
+
     local result, events = Mouse.getTarget()
+    Mouse.mouseEvent = events
     if result ~= Mouse.target then
         Mouse.mouseEvent(Mouse.state, Mouse.events.exit)
         Mouse.target = result
-        Mouse.mouseEvent = events
         if result then
             events(Mouse.state, Mouse.events.enter)
         end

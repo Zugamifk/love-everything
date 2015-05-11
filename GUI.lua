@@ -38,6 +38,11 @@ GUI = {
     end
 }
 
+local guidebugmsg = "nothing"
+function GUI.debug()
+    Debug.track(function() return guidebugmsg end)
+end
+
 -- describes an area of the screen containing gui input stuff
 GUI.window = {
     rect = Rect.zero(),
@@ -77,6 +82,7 @@ GUI.window = {
                         pressed = function(state)
                             if state.pressed.l then
                                 lastpos = state.position
+                                guidebugmsg = "dragging"
                             end
                         end,
                         held = function(state)
@@ -90,7 +96,70 @@ GUI.window = {
                     }
                 end
             end
-        }
+        },
+        resizable = function(edgeSize)
+            return {
+                capture = function(self, pos)
+                    local l,r,b = self.rect:copy(), self.rect:copy(), self.rect:copy()
+                    l.w = edgeSize
+                    r.x = r.x+r.w-edgeSize
+                    r.w = edgeSize
+                    b.y = b.y + b.h-edgeSize
+                    b.h = edgeSize
+                    local lastPos = 0
+                    if mathx.contains(pos, l) then
+                        return Mouse.callbackList{
+                            pressed = function(state)
+                                if state.pressed.l then
+                                    lastpos = state.position.x
+                                    guidebugmsg = "resizing l"
+                                end
+                            end,
+                            held = function(state)
+                                if state.pressed.l then
+                                    local dx = state.position.x-lastpos
+                                    self.rect.x = self.rect.x + dx
+                                    self.rect.w = self.rect.w - dx
+                                    lastpos = lastpos + dx
+                                end
+                            end
+                        }
+                    elseif mathx.contains(pos, r) then
+                        return Mouse.callbackList{
+                            pressed = function(state)
+                                if state.pressed.l then
+                                    lastpos = state.position.x
+                                    guidebugmsg = "resizing r"
+                                end
+                            end,
+                            held = function(state)
+                                if state.pressed.l then
+                                    local dx = state.position.x-lastpos
+                                    self.rect.w = self.rect.w + dx
+                                    lastpos = lastpos + dx
+                                end
+                            end
+                        }
+                    elseif mathx.contains(pos, b) then
+                        return Mouse.callbackList{
+                            pressed = function(state)
+                                if state.pressed.l then
+                                    lastpos = state.position.y
+                                    guidebugmsg = "resizing b"
+                                end
+                            end,
+                            held = function(state)
+                                if state.pressed.l then
+                                    local dy = state.position.y-lastpos
+                                    self.rect.h = self.rect.h + dy
+                                    lastpos = lastpos + dy
+                                end
+                            end
+                        }
+                    end
+                end
+            }
+        end
     },
 
     --for mouse capture, use the rect
