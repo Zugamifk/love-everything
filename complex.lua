@@ -1,19 +1,19 @@
 --[[
- 
+
 LUA MODULE
- 
+
    complex v$(_VERSION) - complex numbers implemented as Lua tables
- 
+
 SYNOPSIS
 
   local complex = require 'complex'
-  local cx1 = complex "2+3i" -- or complex.new(2, 3) 
+  local cx1 = complex "2+3i" -- or complex.new(2, 3)
   local cx2 = complex "3+2i"
   assert( complex.add(cx1,cx2) == complex "5+5i" )
   assert( tostring(cx1) == "2+3i" )
- 
+
 DESCRIPTION
- 
+
   'complex' provides common tasks with complex numbers
 
    function complex.to( arg ); complex( arg )
@@ -35,9 +35,9 @@ API
 DEPENDENCIES
 
   None (other than Lua 5.1 or 5.2).
-  
+
 HOME PAGE
-  
+
   http://luamatrix.luaforge.net
   http://lua-users.org/wiki/LuaMatrix
 
@@ -46,9 +46,9 @@ DOWNLOAD/INSTALL
   ./util.mk
   cd tmp/*
   luarocks make
-  
+
  Licensed under the same terms as Lua itself.
- 
+
   Developers:
     Michael Lutz (chillcode)
     David Manura http://lua-users.org/wiki/DavidManura (maintainer)

@@ -2,7 +2,7 @@ Mouse = {
 
     -- Last recorded state of mouse
     state = {
-        position = XY.zero(), --last recorded position
+        position = XY.zero, --last recorded position
         pressed = {}, -- currently held buttons
     },
 

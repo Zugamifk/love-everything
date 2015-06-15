@@ -22,8 +22,8 @@ Debug = {
 
 	-- camera settings
 	camera = {
-		position = XY.zero(),
-		move = XY.zero(),
+		position = XY.zero,
+		move = XY.zero,
 		speed = 15
 	}
 }
@@ -42,7 +42,6 @@ function Debug.init()
 		Keys.register(dir, mover(XY[dir]), "isDown", "Debug")
 	end
 	Screen.targets("Debug", function() return Debug.camera.position end, Debug.camera)
-
 	--set up mouse grabbing
 	Debug.GUIsettings.logwindow.edge:swap(Color(137,223,132,255))
 	Debug.GUIsettings.logwindow.edge:swap()
@@ -139,7 +138,7 @@ function Debug.update(dt)
 
 	--update debug camera position
 	Debug.camera.position = Debug.camera.position +Debug.camera.move*dt
-	Debug.camera.move = XY.zero()
+	Debug.camera.move = XY.zero
 end
 
 

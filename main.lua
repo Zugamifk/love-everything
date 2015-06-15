@@ -1,8 +1,6 @@
 lf = love.filesystem
 ls = love.sound
 la = love.audio
-lp = love.physics
-lt = love.thread
 li = love.image
 lg = love.graphics
 ASTRING = "d"
@@ -20,7 +18,7 @@ function love.load()
 	require('texture')
 	require('mouse')
 	require('keys')
-	require('GUI')
+	require('GUI/GUI')
 	require('player')
 	require('map')
 	require('screen')
@@ -52,7 +50,14 @@ function love.load()
 
 	box = GUI.window(
 		Rect(25,25,100,100),
-		{GUI.text("Hello world!", Rect(10,10,40,40))},
+		{
+			GUI.cell{
+				rect = Rect(0,10,100,90),
+				elements = {
+					GUI.text{text="Hello world!", rect=Rect(10,3,100,40)}
+				}
+			}
+		},
 		{
 			GUI.window.properties.resizable(10),
 			GUI.window.properties.draggable
@@ -78,7 +83,7 @@ function love.update()
 
 	CoroutineManager.update()
 
-	test.line = Screen.screenToWorldPosition(mousex, mousey)
+	-- test.line = Screen.screenToWorldPosition(mousex, mousey)
 
 	--[[local t = Screen.getTile(mousex, mousey)
 	t.hit = true

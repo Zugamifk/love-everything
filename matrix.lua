@@ -137,7 +137,12 @@ function matrix:new( rows, columns, value )
 			if rows.x ~= nil then
 				return setmetatable({{rows.x},{rows.y},{1}}, matrix_meta)
 			end
-			return setmetatable( {{rows[1]},{rows[2]},{rows[3]}},matrix_meta )
+			local vector = {}
+			for i,v in ipairs(rows) do
+				vector[i] = {v}
+			end
+			return setmetatable(vector, matrix_meta)
+			-- return setmetatable( {{rows[1]},{rows[2]},{rows[3]}},matrix_meta )
 		end
 		return setmetatable( rows,matrix_meta )
 	end
@@ -174,14 +179,42 @@ end
 -- for matrix( ... ) as matrix.new( ... )
 setmetatable( matrix, { __call = function( ... ) return matrix.new( ... ) end } )
 
+function matrix:toRect()
+	return Rect(self[1][1],self[2][1],self[3][1],self[4][1])
+end
+
 XY = {}
 local xy_meta = {}
 
-setmetatable(XY, {__call = function(...) return XY.new(...) end})
+setmetatable(XY,
+	{
+		__call = function(...)
+				return XY.new(...)
+		end,
+		__index = function(t, k)
+			local function XYfactory(x,y)
+				return function()
+					return XY(x,y)
+				end
+			end
+			local constants = {
+				left = XYfactory(-1,0),
+				right = XYfactory(1,0),
+				up = XYfactory(0,1),
+				down = XYfactory(0,-1),
+				zero = XYfactory(0,0),
+				one = XYfactory(1,1)
+			}
+			if constants[k] then
+				return constants[k]()
+			end
+		end
+	}
+)
 
 function XY:new(x,y)
 	if type(x)=="table" then
-		return setmetatable(x, xy_meta)
+		return setmetatable(XY.Copy(x), xy_meta)
 	else
 		return setmetatable({x=x,y=y}, xy_meta)
 	end
@@ -250,19 +283,6 @@ xy_meta.__index = {}
 for k,v in pairs( XY ) do
 	xy_meta.__index[k] = v
 end
-
-local function XYfactory(x,y)
-	return function()
-		return XY(x,y)
-	end
-end
-
-XY.left = XYfactory(-1,0)
-XY.right = XYfactory(1,0)
-XY.up = XYfactory(0,1)
-XY.down = XYfactory(0,-1)
-XY.zero = XYfactory(0,0)
-XY.one = XYfactory(1,1)
 
 -- functions are designed to be light on checks
 -- so we get Lua errors instead on wrong input

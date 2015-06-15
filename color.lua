@@ -3,42 +3,49 @@
 	]]--
 Color = {
 	-- constants
-	swapKey = "swapColorKey"
-
+	swapKey = "swapColorKey",
 }
--- metatable
-setmetatable(Color, {
-	__call = function(...) return Color.new(...) end
-})
 local Color_mt = {}
 
--- Initializer
-function Color:new(r,g,b,a)
-	if type(r) == "table" then
-		if getmetatable(r)==Color_mt then
-			return setmetatable(
-				{r=r.r, g=r.g, b=r.b, a=r.a},
-				Color_mt
-			)
+--controlled values
+Color_proxy = {
+	new = function(self, r,g,b,a)
+		if type(r) == "table" then
+			if getmetatable(r)==Color_mt then
+				return setmetatable(
+					{r=r.r, g=r.g, b=r.b, a=r.a},
+					Color_mt
+				)
+			end
 		end
+		return setmetatable(
+			{r=r, g=g, b=b, a=a or 255},
+			Color_mt
+		)
 	end
-	return setmetatable(
-		{r=r, g=g, b=b, a=a or 255},
-		Color_mt
-	)
-end
+}
 
--- Color definitions
-Color.grey= setmetatable(Color(128,128,128,128),
-	{__call = function(this,shade)
-		return this*shade
-	end})
-Color.white = Color(255,255,255,255)
-Color.black = Color(0,0,0,255)
-Color.clear = Color(0,0,0,0)
-Color.red = Color(255,0,0,255)
-Color.green = Color(0,255,0,255)
-Color.blue = Color(0,0,255,255)
+-- metatable
+setmetatable(Color, {
+	__call = function(...) return Color_proxy.new(...) end,
+	__index = function(t,k)
+		local c = Color_proxy.palette
+		return c[k] and Color(c[k]) or Color[k]
+	end
+})
+
+Color_proxy.palette = {
+	grey= setmetatable(Color(128,128,128,128),
+		{__call = function(this,shade)
+			return this*shade
+		end}),
+	white = Color(255,255,255,255),
+	black = Color(0,0,0,255),
+	clear = Color(0,0,0,0),
+	red = Color(255,0,0,255),
+	green = Color(0,255,0,255),
+	blue = Color(0,0,255,255)
+}
 
 -- functions
 function Color:CopyTo(to)

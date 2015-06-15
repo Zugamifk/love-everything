@@ -111,6 +111,7 @@ function Screen.getTile(x,y)
 end
 
 function Screen.screenToWorldPosition(x,y)
+	assert(x~=nil and y~=nil, "one of x or y is nil!")
 	local pos = Screen.matrixSTW*matrix{x,y,1}
 	return pos:toXY()
 end
